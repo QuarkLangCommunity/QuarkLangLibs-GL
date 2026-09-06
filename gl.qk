@@ -1,0 +1,46 @@
+/* QuarkLang 官方库：gl —— OpenGL 图形 API 绑定（官方认证）
+ *
+ * library gl { ... } 声明集：直接调用系统 OpenGL 导出符号（跨系统：
+ * Linux: libGL.so.1 / libGL.so.6 / libGL.so；macOS: OpenGL.framework（dlopen "libGL.dylib"）；
+ * Windows: opengl32.dll。运行时跨系统加载（dlopen/LoadLibrary）经 libffi 调用。
+ *
+ * 类型映射：f32=float 单精度；int=GLint/GLenum；String=const char*；void=无返回。
+ */
+program library;
+
+library gl {
+    // ---- 清屏/画布 ----
+    fn ClearColor(r f32, g f32, b f32, a f32) void;
+    fn Clear(mask int) void;
+    fn Viewport(x int, y int, w int, h int) void;
+    fn Enable(cap int) void;
+    fn Disable(cap int) void;
+
+    // ---- 立即模式基元（v1 演示用） ----
+    fn Begin(mode int) void;
+    fn End() void;
+    fn Vertex(x f32, y f32) void;
+    fn Color(r f32, g f32, b f32, a f32) void;
+
+    // ---- 双缓冲交换 ----
+    fn Flush() void;
+    fn Finish() void;
+
+    // ---- 查询 ----
+    fn GetString(name int) String;
+    fn GetError() int;
+} gl;
+
+space {
+    // GL 常量（常用位掩码）
+    fn COLOR_BUFFER_BIT() int { return 16384; }
+    fn DEPTH_BUFFER_BIT() int { return 256; }
+    fn TRIANGLES() int { return 4; }
+    fn LINES() int { return 1; }
+    fn SCISSOR_TEST() int { return 3088; }
+    fn DEPTH_TEST() int { return 2929; }
+    fn BLEND() int { return 3042; }
+    fn VERSION() int { return 7938; }
+    fn VENDOR() int { return 7936; }
+    fn RENDERER() int { return 7937; }
+} (glc);
