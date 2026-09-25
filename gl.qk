@@ -10,26 +10,26 @@ program library;
 
 library gl {
     // ---- 清屏/画布 ----
-    fn ClearColor(r f32, g f32, b f32, a f32) void;
-    fn Clear(mask int) void;
-    fn Viewport(x int, y int, w int, h int) void;
-    fn Enable(cap int) void;
-    fn Disable(cap int) void;
+    fn ClearColor(f32 r, f32 g, f32 b, f32 a) void;
+    fn Clear(int mask) void;
+    fn Viewport(int x, int y, int w, int h) void;
+    fn Enable(int cap) void;
+    fn Disable(int cap) void;
 
     // ---- 立即模式基元（v1 演示用） ----
-    fn Begin(mode int) void;
+    fn Begin(int mode) void;
     fn End() void;
-    fn Vertex(x f32, y f32) void;
-    fn Color(r f32, g f32, b f32, a f32) void;
+    fn Vertex(f32 x, f32 y) void;
+    fn Color(f32 r, f32 g, f32 b, f32 a) void;
 
     // ---- 双缓冲交换 ----
     fn Flush() void;
     fn Finish() void;
 
     // ---- 查询 ----
-    fn GetString(name int) String;
+    fn GetString(int name) String;
     fn GetError() int;
-} gl;
+}
 
 space {
     // GL 常量（常用位掩码）
@@ -43,4 +43,4 @@ space {
     fn VERSION() int { return 7938; }
     fn VENDOR() int { return 7936; }
     fn RENDERER() int { return 7937; }
-} (glc);
+} glc;
