@@ -1,0 +1,59 @@
+// Behaviour pinned for the OpenGL declaration set. The FFI surface needs a GL context, which no
+// CI runner has, but the `glc::` constants are plain space functions and they are what callers
+// pass to every gl* call, so their values are pinned here against the Khronos GL header:
+//   GL_COLOR_BUFFER_BIT 0x00004000 = 16384, GL_DEPTH_BUFFER_BIT 0x00000100 = 256,
+//   GL_LINES 0x0001 = 1, GL_TRIANGLES 0x0004 = 4, GL_SCISSOR_TEST 0x0C11 = 3088,
+//   GL_DEPTH_TEST 0x0B71 = 2929, GL_BLEND 0x0BE2 = 3042,
+//   GL_VENDOR 0x1F00 = 7936, GL_RENDERER 0x1F01 = 7937, GL_VERSION 0x1F02 = 7938.
+// Values are written in decimal because the pinned interpreter version does not accept hex.
+import "gl";
+
+program main;
+
+fn chk(IOStream io, List<int> st, String name, bool cond) int {
+    if (cond) {
+        io.println("OK " + name);
+    } else {
+        st[0] = st[0] + 1;
+        io.println("FAIL " + name);
+    }
+    return 0;
+}
+
+fn chkI(IOStream io, List<int> st, String name, int got, int want) int {
+    if (got == want) {
+        io.println("OK " + name);
+    } else {
+        st[0] = st[0] + 1;
+        io.println("FAIL " + name + " got=" + got.toString() + " want=" + want.toString());
+    }
+    return 0;
+}
+
+fn main(IOStream io) {
+    List<int> st = [0];
+
+    // Clear masks (README's example combines these two with +, so the sum must be their union:
+    // if the two masks aliased one bit the sum would not be 16640).
+    chkI(io, st, "color-buffer-bit", glc::COLOR_BUFFER_BIT(), 16384);
+    chkI(io, st, "depth-buffer-bit", glc::DEPTH_BUFFER_BIT(), 256);
+    chkI(io, st, "clear-masks-combine", glc::COLOR_BUFFER_BIT() + glc::DEPTH_BUFFER_BIT(), 16640);
+
+    // Primitive and capability names.
+    chkI(io, st, "lines", glc::LINES(), 1);
+    chkI(io, st, "triangles", glc::TRIANGLES(), 4);
+    chkI(io, st, "scissor-test", glc::SCISSOR_TEST(), 3088);
+    chkI(io, st, "depth-test", glc::DEPTH_TEST(), 2929);
+    chkI(io, st, "blend", glc::BLEND(), 3042);
+
+    // glGetString selectors.
+    chkI(io, st, "vendor-selector", glc::VENDOR(), 7936);
+    chkI(io, st, "renderer-selector", glc::RENDERER(), 7937);
+    chkI(io, st, "version-selector", glc::VERSION(), 7938);
+
+    // The three glGetString selectors are distinct, or GetString could not tell them apart.
+    chk(io, st, "selectors-are-distinct",
+        (glc::VERSION() - glc::VENDOR()) * (glc::VERSION() - glc::RENDERER()) * (glc::RENDERER() - glc::VENDOR()) != 0);
+
+    io.println("failures=" + st[0].toString());
+}
